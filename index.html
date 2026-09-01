@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maya Jayachandran — Homepage Preview (Jazzi Direction)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --raspberry: #C4366F;
+    --pink-pale: #EFCCDF;
+    --pink-bright: #FD96CD;
+    --blue-soft: #BBD6DA;
+    --yellow-pale: #F4E89A;
+    --sage-green: #C3DFB8;
+    --blue-deep: #2C5860;
+    --green-deep: #3F6B3A;
+    --ink: #2B1420;
+    --ink-soft: #6B4A57;
+    --white: #FFFFFF;
+
+    --font-display: 'Anton', sans-serif;
+    --font-head: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--ink);
+    background: var(--white);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+
+  /* ---------- NAV ---------- */
+
+  .topnav {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.6rem clamp(1.5rem, 5vw, 3.5rem);
+  }
+
+  .topnav .logotype {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--pink-pale);
+    letter-spacing: -0.01em;
+  }
+
+  .topnav .links {
+    display: flex;
+    gap: clamp(1.2rem, 3vw, 2rem);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--pink-pale);
+  }
+
+  .topnav .links a {
+    position: relative;
+    padding-bottom: 3px;
+  }
+  .topnav .links a::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 2px;
+    background: var(--yellow-pale);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+  .topnav .links a:hover::after { transform: scaleX(1); }
+
+  /* ---------- HERO ---------- */
+
+  .hero {
+    background: var(--raspberry);
+    padding-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .hero-headline {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.9rem, 8.6vw, 8rem);
+    line-height: 0.92;
+    letter-spacing: -0.01em;
+    color: var(--pink-pale);
+    padding: clamp(0.5rem, 2vw, 1rem) clamp(1.5rem, 5vw, 3.5rem) 0;
+    white-space: nowrap;
+  }
+
+  .hero-tagline {
+    padding: 0.9rem clamp(1.5rem, 5vw, 3.5rem) 0;
+    font-size: clamp(1rem, 1.8vw, 1.25rem);
+    font-weight: 600;
+    color: var(--white);
+    max-width: 46ch;
+  }
+
+  .hero-subline {
+    padding: 0.9rem clamp(1.5rem, 5vw, 3.5rem) clamp(2rem, 4vw, 2.6rem);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--pink-pale);
+  }
+
+  .hero-subline .star {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  /* ---------- HERO PHOTO MARQUEE ---------- */
+
+  .marquee-outer {
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .marquee-track {
+    display: flex;
+    gap: 1.1rem;
+    width: max-content;
+    padding: 0 1.1rem;
+    animation: scroll-left 34s linear infinite;
+  }
+
+  .marquee-outer:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes scroll-left {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .marquee-tile {
+    flex-shrink: 0;
+    width: clamp(150px, 20vw, 230px);
+    height: clamp(210px, 27vw, 310px);
+    border-radius: 18px;
+    border: 6px solid var(--pink-pale);
+    overflow: hidden;
+    box-shadow: 0 10px 22px rgba(43, 20, 32, 0.25);
+  }
+
+  .marquee-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track { animation: none; }
+  }
+
+  /* ---------- ABOUT / HI I'M MAYA ---------- */
+
+  .about {
+    padding: clamp(4.5rem, 9vw, 7rem) clamp(1.5rem, 5vw, 3.5rem);
+    background: var(--white);
+  }
+
+  .about-grid {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: clamp(2.5rem, 6vw, 5rem);
+    align-items: center;
+  }
+
+  .about-photo-wrap {
+    position: relative;
+  }
+
+  .about-photo {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: 20px;
+  }
+
+  .about-text .kicker {
+    display: inline-block;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--raspberry);
+    background: var(--pink-pale);
+    padding: 0.35rem 0.8rem;
+    border-radius: 100px;
+    margin-bottom: 1rem;
+  }
+
+  .about-text h2 {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+    line-height: 1.2;
+    margin-bottom: 1.2rem;
+    max-width: 20ch;
+  }
+
+  .about-text p {
+    font-size: 1.04rem;
+    color: var(--ink-soft);
+    max-width: 58ch;
+    margin-bottom: 1.1rem;
+  }
+
+  .about-cta {
+    display: inline-block;
+    margin-top: 1.2rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.92rem;
+    padding: 0.85rem 1.7rem;
+    border-radius: 100px;
+    background: var(--raspberry);
+    color: var(--white);
+  }
+
+  /* ---------- SERVICE STACK (STICKY CARDS) ---------- */
+
+  .service-stack {
+    position: relative;
+  }
+
+  .service-panel {
+    position: sticky;
+    min-height: 88vh;
+    padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 5vw, 3.5rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .service-panel:nth-child(1) { top: 0px; z-index: 1; background: var(--pink-bright); }
+  .service-panel:nth-child(2) { top: 64px; z-index: 2; background: var(--blue-soft); }
+  .service-panel:nth-child(3) { top: 128px; z-index: 3; background: var(--sage-green); }
+  .service-panel:nth-child(4) { top: 192px; z-index: 4; background: var(--yellow-pale); }
+
+  .panel-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+    position: relative;
+  }
+
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .panel-title {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: clamp(2.6rem, 7vw, 5.4rem);
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+
+  .panel-num {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: clamp(1.6rem, 4vw, 3rem);
+    opacity: 0.85;
+  }
+
+  .service-panel:nth-child(1) .panel-title,
+  .service-panel:nth-child(1) .panel-num { color: var(--raspberry); }
+  .service-panel:nth-child(2) .panel-title,
+  .service-panel:nth-child(2) .panel-num { color: var(--blue-deep); }
+  .service-panel:nth-child(3) .panel-title,
+  .service-panel:nth-child(3) .panel-num { color: var(--green-deep); }
+  .service-panel:nth-child(4) .panel-title,
+  .service-panel:nth-child(4) .panel-num { color: var(--raspberry); }
+
+  .panel-desc {
+    font-size: clamp(1rem, 1.6vw, 1.2rem);
+    font-weight: 600;
+    max-width: 46ch;
+    margin-top: 1.4rem;
+    color: var(--ink);
+  }
+
+  .panel-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1.6rem;
+    max-width: 55%;
+  }
+
+  .panel-tags span {
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.55);
+    color: var(--ink);
+  }
+
+  .panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 1.8rem;
+  }
+
+  .panel-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.75rem 1.4rem;
+    border-radius: 100px;
+    background: var(--ink);
+    color: var(--white);
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+
+  .panel-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .panel-btn.secondary {
+    background: transparent;
+    border: 1.5px solid var(--ink);
+    color: var(--ink);
+  }
+
+  .panel-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .panel-photo {
+    position: absolute;
+    right: 0;
+    bottom: -1rem;
+    width: clamp(160px, 30vw, 340px);
+    height: clamp(140px, 22vw, 220px);
+    object-fit: cover;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 14px 26px rgba(43, 20, 32, 0.2);
+  }
+
+  @media (max-width: 800px) {
+    .service-panel { min-height: 74vh; }
+    .panel-tags { max-width: 100%; }
+    .panel-photo { position: static; margin-top: 1.6rem; width: 100%; height: 180px; border-radius: 16px; }
+  }
+
+  /* ---------- FLOATING CONTACT PILL ---------- */
+
+  .contact-pill {
+    position: fixed;
+    bottom: 1.6rem;
+    right: 1.6rem;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--pink-pale);
+    padding: 0.35rem 1.2rem 0.35rem 0.35rem;
+    border-radius: 100px;
+    box-shadow: 0 10px 24px rgba(43, 20, 32, 0.28);
+  }
+
+  .contact-pill img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .contact-pill span {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--raspberry);
+  }
+
+  @media (max-width: 560px) {
+    .contact-pill { bottom: 1rem; right: 1rem; }
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  .contact-intro .footer-kicker {
+    font-size: 0.85rem;
+    color: var(--blue-soft);
+    margin-bottom: 0.6rem;
+  }
+
+  .contact-intro h2 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    color: var(--white);
+    margin-bottom: 1.2rem;
+  }
+
+  .contact-intro p {
+    font-size: 0.98rem;
+    color: var(--blue-soft);
+    max-width: 40ch;
+    margin-bottom: 1.6rem;
+  }
+
+  .footer-email {
+    display: inline-block;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--pink-bright);
+    border-bottom: 2px solid var(--pink-bright);
+    padding-bottom: 3px;
+  }
+
+  .contact-form {
+    background: var(--pink-pale);
+    border-radius: 20px;
+    padding: clamp(1.5rem, 3vw, 2.2rem);
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .contact-form label {
+    display: block;
+    font-family: var(--font-head);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 0.4rem;
+  }
+
+  .contact-form input,
+  .contact-form select,
+  .contact-form textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(43, 20, 32, 0.15);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--ink);
+    background: var(--white);
+  }
+
+  .contact-form textarea {
+    resize: vertical;
+    min-height: 90px;
+  }
+
+  .contact-form button {
+    align-self: flex-start;
+    margin-top: 0.3rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.85rem 1.8rem;
+    border-radius: 100px;
+    background: var(--raspberry);
+    color: var(--white);
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .contact-form button:hover {
+    background: var(--pink-bright);
+    color: var(--ink);
+  }
+
+  /* ---------- FOOTER ---------- */
+
+  footer {
+    background: var(--ink);
+    color: var(--pink-pale);
+    padding: clamp(3.5rem, 7vw, 5.5rem) clamp(1.5rem, 5vw, 3.5rem) 2rem;
+  }
+
+  .footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  footer .footer-kicker {
+    font-size: 0.85rem;
+    color: var(--blue-soft);
+    margin-bottom: 0.6rem;
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 3.5rem;
+    padding-top: 1.6rem;
+    border-top: 1px solid rgba(239, 204, 223, 0.18);
+    font-size: 0.85rem;
+    color: var(--blue-soft);
+  }
+
+  .footer-bottom .socials {
+    display: flex;
+    gap: 1.4rem;
+  }
+  .footer-bottom .socials a:hover { color: var(--pink-bright); }
+
+  /* ---------- RESPONSIVE ---------- */
+
+  @media (max-width: 900px) {
+    .about-grid { grid-template-columns: 1fr; }
+    .about-photo-wrap { max-width: 340px; margin: 0 auto; }
+    .pillar-row { grid-template-columns: 40px 1fr; }
+    .pillar-tags { grid-column: 1 / -1; }
+    .contact-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 560px) {
+    .topnav { flex-direction: column; align-items: flex-start; gap: 0.7rem; }
+    .footer-bottom { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="topnav">
+    <div class="logotype">Maya J.</div>
+    <div class="links">
+      <a href="#">Home</a>
+      <a href="#athletics">Athletics</a>
+      <a href="#civic">Civic Work</a>
+      <a href="#writing">Writing</a>
+    </div>
+  </div>
+
+  <h1 class="hero-headline">MAYA JAYACHANDRAN</h1>
+  <p class="hero-tagline">Competing on the court. Showing up for people who don't get a choice.</p>
+  <div class="hero-subline">
+    <svg class="star" viewBox="0 0 24 24" fill="var(--yellow-pale)" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg>
+    Class of 2029 · Roland Park Country School · Baltimore, MD
+  </div>
+
+  <div class="marquee-outer">
+    <div class="marquee-track">
+      <div class="marquee-tile"><img src="images/photo-basketball-tourney.jpg" alt="Basketball tournament"></div>
+      <div class="marquee-tile"><img src="images/photo-casual-portrait.jpg" alt="Portrait"></div>
+      <div class="marquee-tile"><img src="images/photo-rowing-gear.jpg" alt="Rowing practice"></div>
+      <div class="marquee-tile"><img src="images/photo-podium-speech.jpg" alt="Speaking at a podium"></div>
+      <div class="marquee-tile"><img src="images/photo-rally.jpg" alt="Community rally"></div>
+      <div class="marquee-tile"><img src="images/photo-basketball-teammelo.jpg" alt="Basketball action shot"></div>
+      <div class="marquee-tile"><img src="images/photo-rowing-water.jpg" alt="Rowing on the water"></div>
+      <!-- duplicate set for seamless loop -->
+      <div class="marquee-tile"><img src="images/photo-basketball-tourney.jpg" alt=""></div>
+      <div class="marquee-tile"><img src="images/photo-casual-portrait.jpg" alt=""></div>
+      <div class="marquee-tile"><img src="images/photo-rowing-gear.jpg" alt=""></div>
+      <div class="marquee-tile"><img src="images/photo-podium-speech.jpg" alt=""></div>
+      <div class="marquee-tile"><img src="images/photo-rally.jpg" alt=""></div>
+      <div class="marquee-tile"><img src="images/photo-basketball-teammelo.jpg" alt=""></div>
+      <div class="marquee-tile"><img src="images/photo-rowing-water.jpg" alt=""></div>
+    </div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="about-grid">
+    <div class="about-photo-wrap">
+      <img class="about-photo" src="images/photo-casual-portrait.jpg" alt="Maya">
+    </div>
+    <div class="about-text">
+      <span class="kicker">Hi, I'm Maya</span>
+      <h2>I care most about people who don't get to choose their circumstances.</h2>
+      <p>
+        I've spent the last two summers at Global Refuge and The Sanctuary in
+        Baltimore, working alongside families navigating systems that weren't
+        built with them in mind. That work sits right next to basketball and
+        rowing for me — not opposite it. Both are about showing up when it's
+        hard and doing the unglamorous parts well.
+      </p>
+      <p>
+        I'm fifteen. I don't have this all figured out yet, and I'm not
+        pretending to. This site is where I'm building the throughline in
+        public, one season and one piece of writing at a time.
+      </p>
+      <a class="about-cta" href="#">Read the full story</a>
+    </div>
+  </div>
+</section>
+
+<section class="service-stack">
+  <div class="service-panel">
+    <div class="panel-inner">
+      <div class="panel-head">
+        <h2 class="panel-title">Athlete</h2>
+        <span class="panel-num">(01)</span>
+      </div>
+      <p class="panel-desc">Competitive basketball player with a growing focus on rowing — chasing the same discipline in a new discipline.</p>
+      <div class="panel-tags">
+        <span>Basketball</span>
+        <span>Rowing</span>
+        <span>Discipline</span>
+        <span>Team-first</span>
+      </div>
+      <div class="panel-actions">
+        <a class="panel-btn" href="#athletics">See more</a>
+        <a class="panel-btn secondary" href="https://instagram.com/maya.jayachandran.2029" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M6 4L20 12L6 20V4Z"/></svg>
+          Watch highlight reel
+        </a>
+      </div>
+      <img class="panel-photo" src="images/photo-basketball-teammelo.jpg" alt="Maya playing basketball">
+    </div>
+  </div>
+
+  <div class="service-panel">
+    <div class="panel-inner">
+      <div class="panel-head">
+        <h2 class="panel-title">Global Refuge</h2>
+        <span class="panel-num">(02)</span>
+      </div>
+      <p class="panel-desc">Summer internship supporting resettlement work with immigrant and refugee families arriving in Baltimore.</p>
+      <div class="panel-tags">
+        <span>Resettlement</span>
+        <span>Immigration</span>
+        <span>Advocacy</span>
+        <span>Internship</span>
+      </div>
+      <div class="panel-actions">
+        <a class="panel-btn" href="#civic">See more</a>
+      </div>
+      <img class="panel-photo" src="images/photo-rally.jpg" alt="Community rally">
+    </div>
+  </div>
+
+  <div class="service-panel">
+    <div class="panel-inner">
+      <div class="panel-head">
+        <h2 class="panel-title">The Sanctuary</h2>
+        <span class="panel-num">(03)</span>
+      </div>
+      <p class="panel-desc">Direct-service internship in Baltimore, working alongside vulnerable community members navigating systems not built with them in mind.</p>
+      <div class="panel-tags">
+        <span>Direct Service</span>
+        <span>Baltimore</span>
+        <span>Community</span>
+        <span>Internship</span>
+      </div>
+      <div class="panel-actions">
+        <a class="panel-btn" href="#civic">See more</a>
+      </div>
+      <img class="panel-photo" src="images/photo-podium-speech.jpg" alt="Speaking at a podium">
+    </div>
+  </div>
+
+  <div class="service-panel">
+    <div class="panel-inner">
+      <div class="panel-head">
+        <h2 class="panel-title">Student</h2>
+        <span class="panel-num">(04)</span>
+      </div>
+      <p class="panel-desc">Grade 10 at Roland Park Country School — academically curious, still figuring out what's next, and building this in public.</p>
+      <div class="panel-tags">
+        <span>Class of 2029</span>
+        <span>Baltimore, MD</span>
+      </div>
+      <div class="panel-actions">
+        <a class="panel-btn" href="#about">See more</a>
+      </div>
+      <img class="panel-photo" src="images/photo-rowing-water.jpg" alt="Rowing on the water">
+    </div>
+  </div>
+</section>
+
+<a class="contact-pill" href="#connect">
+  <img src="images/photo-casual-portrait.jpg" alt="Maya">
+  <span>Contact</span>
+</a>
+
+<footer id="connect">
+  <div class="footer-inner">
+    <div class="contact-grid">
+      <div class="contact-intro">
+        <div class="footer-kicker">Coaches, admissions readers, mentors —</div>
+        <h2>Let's Connect</h2>
+        <p>Send a message directly, or reach out over email or Instagram — whichever's easiest.</p>
+        <a class="footer-email" href="mailto:maya.jayachandran2011@gmail.com">maya.jayachandran2011@gmail.com</a>
+      </div>
+
+      <form class="contact-form" id="contact-form">
+        <div>
+          <label for="cf-name">Full name</label>
+          <input type="text" id="cf-name" name="name" placeholder="Your name" required>
+        </div>
+        <div>
+          <label for="cf-email">Email</label>
+          <input type="email" id="cf-email" name="email" placeholder="you@example.com" required>
+        </div>
+        <div>
+          <label for="cf-topic">What's this about?</label>
+          <select id="cf-topic" name="topic">
+            <option>Athletic Recruiting</option>
+            <option>College Admissions</option>
+            <option>Civic Work / Mentorship</option>
+            <option>Something Else</option>
+          </select>
+        </div>
+        <div>
+          <label for="cf-message">Message</label>
+          <textarea id="cf-message" name="message" placeholder="What would you like to connect about?"></textarea>
+        </div>
+        <button type="submit">Send</button>
+      </form>
+    </div>
+
+    <div class="footer-bottom">
+      <div id="footer-location">Baltimore, MD</div>
+      <div class="socials">
+        <a href="https://instagram.com/maya.jayachandran.2029" target="_blank" rel="noopener">Instagram</a>
+        <a href="mailto:maya.jayachandran2011@gmail.com">Email</a>
+      </div>
+      <div>© 2026 Maya Jayachandran</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function updateClock() {
+    const el = document.getElementById('footer-location');
+    if (!el) return;
+    const time = new Intl.DateTimeFormat('en-US', {
+      hour: '2-digit', minute: '2-digit', timeZone: 'America/New_York'
+    }).format(new Date());
+    el.textContent = 'Baltimore, MD · ' + time;
+  }
+  updateClock();
+  setInterval(updateClock, 30000);
+
+  const form = document.getElementById('contact-form');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const name = document.getElementById('cf-name').value;
+      const email = document.getElementById('cf-email').value;
+      const topic = document.getElementById('cf-topic').value;
+      const message = document.getElementById('cf-message').value;
+      const subject = encodeURIComponent('Website message: ' + topic);
+      const body = encodeURIComponent(
+        'Name: ' + name + '\nEmail: ' + email + '\n\n' + message
+      );
+      window.location.href = 'mailto:maya.jayachandran2011@gmail.com?subject=' + subject + '&body=' + body;
+    });
+  }
+</script>
+
+</body>
+</html>
