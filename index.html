@@ -114,6 +114,7 @@
   .hero-subline {
     padding: 0.9rem clamp(1.5rem, 5vw, 3.5rem) clamp(2rem, 4vw, 2.6rem);
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 0.5rem;
     font-size: 0.85rem;
@@ -587,8 +588,6 @@
   @media (max-width: 900px) {
     .about-grid { grid-template-columns: 1fr; }
     .about-photo-wrap { max-width: 340px; margin: 0 auto; }
-    .pillar-row { grid-template-columns: 40px 1fr; }
-    .pillar-tags { grid-column: 1 / -1; }
     .contact-grid { grid-template-columns: 1fr; }
   }
 
@@ -611,7 +610,6 @@
       <a href="#">Home</a>
       <a href="#athletics">Athletics</a>
       <a href="#civic">Civic Work</a>
-      <a href="#writing">Writing</a>
     </div>
   </div>
 
@@ -654,17 +652,17 @@
     </div>
     <div class="about-text">
       <span class="kicker">Hi, I'm Maya!</span>
-      <h2>I am pushing myself on the court, in the boat, the classroom, and in rooms where people are fighting for something bigger than themselves.</h2>
+      <h2>I am pushing myself on the court, in the boat, in the classroom, and in rooms where people are fighting for something bigger than themselves.</h2>
       <p>
         I've spent this past summer volunteering both with Global Refuge and
         The Sanctuary, working to impact families navigating systems that
         weren't initially built for them.
       </p>
       <p>
-        This work is extremely important to me as a person and how I want to
-        help define the future. Both organizations are about showing up, even
-        when it's hard, and doing the unglamorous parts well alongside the
-        parts that get mentioned in the news.
+        This work matters to me deeply and shapes how I want to help define
+        the future. Both organizations are about showing up, even when it's
+        hard, and doing the unglamorous parts well alongside the parts that
+        get mentioned in the news.
       </p>
       <a class="about-cta" href="#">Read the full story</a>
     </div>
@@ -672,13 +670,13 @@
 </section>
 
 <section class="service-stack">
-  <div class="service-panel">
+  <div class="service-panel" id="athletics">
     <div class="panel-inner">
       <div class="panel-head">
         <h2 class="panel-title">Athlete</h2>
         <span class="panel-num">(01)</span>
       </div>
-      <p class="panel-desc">Competitive basketball player on the EYCL Circuit with Team Melo with a growing intrest in rowing through school and Baltimore Community Rowing.</p>
+      <p class="panel-desc">Competitive basketball player on the EYCL Circuit with Team Melo, with a growing interest in rowing through school and Baltimore Community Rowing.</p>
       <div class="panel-tags">
         <span>Basketball</span>
         <span>Rowing</span>
@@ -696,7 +694,7 @@
     </div>
   </div>
 
-  <div class="service-panel">
+  <div class="service-panel" id="civic">
     <div class="panel-inner">
       <div class="panel-head">
         <h2 class="panel-title">Global Refuge</h2>
@@ -723,7 +721,7 @@
         <h2 class="panel-title">The Sanctuary</h2>
         <span class="panel-num">(03)</span>
       </div>
-      <p class="panel-desc">Assisting elementry and middle school age kids in Baltimore, through The Sanctuary Collective, a Baltimore nonprofit that uses basketball to open the door to academic and life support.</p>
+      <p class="panel-desc">Assisting elementary and middle school age kids in Baltimore, through The Sanctuary Collective, a Baltimore nonprofit that uses basketball to open the door to academic and life support.</p>
       <div class="panel-tags">
         <span>Direct Service</span>
         <span>Baltimore</span>
@@ -734,7 +732,7 @@
         <a class="panel-btn" href="#civic">See more</a>
         <a class="panel-btn secondary" href="https://www.sanctuary-collective.org/" target="_blank" rel="noopener">Visit The Sanctuary</a>
       </div>
-      <img class="panel-photo" src="images/photo-podium-speech.jpg" alt="Speaking at a podium">
+      <img class="panel-photo crop-top" src="images/photo-sanctuary-panel.jpg" alt="The Sanctuary Basketball signage courtside">
     </div>
   </div>
 
@@ -744,13 +742,14 @@
         <h2 class="panel-title">Student</h2>
         <span class="panel-num">(04)</span>
       </div>
-      <p class="panel-desc">Grade 10 at Roland Park Country School. Interested in International Affairs and Politics.</p>
+      <p class="panel-desc">Grade 10 at Roland Park Country School, with a growing interest in International Affairs and Politics.</p>
       <div class="panel-tags">
         <span>Class of 2029</span>
         <span>Baltimore, MD</span>
       </div>
       <div class="panel-actions">
         <a class="panel-btn" href="#about">See more</a>
+        <a class="panel-btn secondary" href="https://www.rpcs.org/" target="_blank" rel="noopener">Visit RPCS</a>
       </div>
       <img class="panel-photo" src="images/photo-rowing-water.jpg" alt="Rowing on the water">
     </div>
