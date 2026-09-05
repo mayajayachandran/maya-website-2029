@@ -964,6 +964,14 @@
     });
   })();
 
+  /* ---------- TAB TITLE: nudge visitors back when they switch tabs ---------- */
+  (function () {
+    const originalTitle = document.title;
+    document.addEventListener('visibilitychange', function () {
+      document.title = document.hidden ? "WAIT, DON'T LEAVE! 😢" : originalTitle;
+    });
+  })();
+
   function updateClock() {
     const el = document.getElementById('footer-location');
     if (!el) return;
