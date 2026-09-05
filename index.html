@@ -94,7 +94,7 @@
   .hero-headline {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: clamp(1.9rem, 8.6vw, 8rem);
+    font-size: clamp(2.4rem, 9.4vw, 13rem);
     line-height: 0.92;
     letter-spacing: -0.01em;
     color: var(--pink-pale);
@@ -152,8 +152,8 @@
 
   .marquee-tile {
     flex-shrink: 0;
-    width: clamp(150px, 20vw, 230px);
-    height: clamp(210px, 27vw, 310px);
+    width: clamp(200px, 24vw, 320px);
+    height: clamp(270px, 32vw, 430px);
     border-radius: 18px;
     border: 6px solid var(--pink-pale);
     overflow: hidden;
@@ -554,6 +554,10 @@
   }
 
   @media (max-width: 560px) {
+    .hero-headline {
+      white-space: normal;
+      font-size: clamp(2.6rem, 12vw, 4.2rem);
+    }
     .topnav { flex-direction: column; align-items: flex-start; gap: 0.7rem; }
     .footer-bottom { flex-direction: column; align-items: flex-start; }
   }
