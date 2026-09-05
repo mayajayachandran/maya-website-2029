@@ -529,6 +529,12 @@
     margin-bottom: 1.6rem;
   }
 
+  .intro-social-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
   .footer-email {
     display: inline-flex;
     align-items: center;
@@ -852,9 +858,14 @@
         <div class="footer-kicker">Coaches, admissions readers, mentors —</div>
         <h2>Let's Connect</h2>
         <p>Send a message directly, or reach out over email or Instagram — whichever's easiest.</p>
-        <a class="footer-email" id="footer-email-link" href="#" aria-label="Email Maya">
-          <img src="images/icon-email.png" alt="Email icon">
-        </a>
+        <div class="intro-social-row">
+          <a class="footer-email" id="footer-email-link" href="#" aria-label="Email Maya">
+            <img src="images/icon-email.png" alt="Email icon">
+          </a>
+          <a class="footer-email" href="https://instagram.com/maya.jayachandran.2029" target="_blank" rel="noopener" aria-label="Maya's Instagram">
+            <img src="images/icon-instagram.png" alt="Instagram icon">
+          </a>
+        </div>
         <noscript><p style="color: var(--blue-soft); font-size: 0.85rem; margin-top: 0.5rem;">Email: maya dot jayachandran2011 at gmail dot com</p></noscript>
       </div>
 
@@ -895,7 +906,9 @@
     <div class="footer-bottom">
       <div id="footer-location">Baltimore, MD</div>
       <div class="socials">
-        <a href="https://instagram.com/maya.jayachandran.2029" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://instagram.com/maya.jayachandran.2029" target="_blank" rel="noopener" class="socials-email" aria-label="Maya's Instagram">
+          <img src="images/icon-instagram.png" alt="Instagram icon">
+        </a>
         <a href="#" id="socials-email-link" class="socials-email" aria-label="Email Maya">
           <img src="images/icon-email.png" alt="Email icon">
         </a>
