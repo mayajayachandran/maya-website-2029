@@ -86,20 +86,19 @@
   .topnav .links a:hover::after { transform: scaleX(1); }
 
   /* ---------- INTRO ANIMATION ---------- */
-  /* intro-name shares hero-headline's exact font-size/padding/line-height —
-     so its natural position (transform: none) IS the real headline's
-     position, guaranteed, at every screen size. No JS measurement needed;
-     the whole thing is just animating a transform toward "none". */
-  /* Timeline: 0-0.25s solid pink pause -> name fades in, centered+small ->
-     scales up over ~0.95s, still centered -> glides to its natural
-     top-left position over ~0.65s -> overlay fades out. ~2.6s total. */
+  /* The real bug this replaces: .intro-name was positioned at the true
+     viewport top, but the real .hero-headline is pushed down by .topnav's
+     height (it's a normal-flow sibling before it). Fix: reuse the actual
+     .topnav markup as an invisible spacer, and apply the .hero-headline
+     class directly to intro-name — so its natural in-flow position is
+     guaranteed identical to the real headline's, at every screen size,
+     because it's the same layout rules, not copied values. */
 
   .intro-overlay {
     position: fixed;
     inset: 0;
     z-index: 200;
     background: var(--raspberry);
-    overflow: hidden;
     transition: opacity 0.25s ease-in;
   }
 
@@ -108,23 +107,18 @@
     pointer-events: none;
   }
 
+  .intro-nav-spacer {
+    visibility: hidden;
+  }
+
   .intro-name {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    font-family: var(--font-display);
-    font-weight: 400;
-    color: var(--pink-pale);
-    font-size: clamp(2.4rem, 9.4vw, 13rem);
-    line-height: 0.92;
-    letter-spacing: -0.01em;
-    white-space: nowrap;
-    padding: clamp(0.5rem, 2vw, 1rem) clamp(1.5rem, 5vw, 3.5rem) 0;
     opacity: 0;
     /* translate(-50%,-50%) centers based on THIS element's own rendered
-       size regardless of how wide the text turns out to be, then the
-       50vw/44vh moves that centered anchor to the viewport's middle. */
+       size regardless of how wide the text turns out to be; 50vw/44vh
+       then shifts that centered anchor toward the viewport's middle.
+       (Slightly offset from true-center by the nav spacer's height/the
+       headline's own padding above — cosmetic only, doesn't affect the
+       final landing spot, which is exactly "no transform".) */
     transform: translate(50vw, 44vh) translate(-50%, -50%) scale(0.22);
     animation:
       introFadeIn 0.3s ease-out 0.25s forwards,
@@ -137,14 +131,6 @@
     to { transform: translate(50vw, 44vh) translate(-50%, -50%) scale(1); }
   }
   @keyframes introGlideHome { to { transform: none; } }
-
-  @media (max-width: 560px) {
-    .hero-headline,
-    .intro-name {
-      white-space: normal;
-      font-size: clamp(2.6rem, 12vw, 4.2rem);
-    }
-  }
 
   @media (prefers-reduced-motion: reduce) {
     .intro-overlay { display: none; }
@@ -704,7 +690,15 @@
 <body>
 
 <div class="intro-overlay" id="intro-overlay">
-  <h1 class="intro-name">MAYA JAYACHANDRAN</h1>
+  <div class="topnav intro-nav-spacer" aria-hidden="true">
+    <div class="logotype">Maya J.</div>
+    <div class="links">
+      <a href="#">Home</a>
+      <a href="#athletics">Athletics</a>
+      <a href="#civic">Civic Work</a>
+    </div>
+  </div>
+  <h1 class="hero-headline intro-name">MAYA JAYACHANDRAN</h1>
 </div>
 
 <section class="hero">
@@ -945,6 +939,15 @@
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduced) { overlay.remove(); return; }
+
+    // Reloads can restore whatever scroll position the visitor was at,
+    // which would play this full-viewport intro over the wrong part of
+    // the page. Force every load back to the top so the intro always
+    // lines up with what it's covering.
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
 
     document.body.style.overflow = 'hidden';
 
