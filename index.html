@@ -86,9 +86,10 @@
   .topnav .links a:hover::after { transform: scaleX(1); }
 
   /* ---------- INTRO ANIMATION ---------- */
-  /* Timeline: 0–0.25s solid pink pause -> name fades in centered, small ->
-     scales up over ~0.95s -> brief hold -> overlay fades out revealing the
-     real page (already fully rendered underneath). ~1.9s total. */
+  /* Timeline: 0-0.25s solid pink pause -> name fades in centered, small ->
+     scales up over ~0.95s (CSS keyframes, below) -> JS measures the real
+     hero-headline's exact position and glides the name into it (~0.65s) ->
+     overlay fades out, revealing the real page underneath. ~2.6s total. */
 
   .intro-overlay {
     position: fixed;
@@ -98,7 +99,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: introOverlayFade 0.35s ease-in 1.55s forwards;
+    transition: opacity 0.25s ease-in;
+  }
+
+  .intro-overlay.fade-out {
+    opacity: 0;
+    pointer-events: none;
   }
 
   .intro-name {
@@ -117,16 +123,12 @@
 
   @keyframes introFadeIn { to { opacity: 1; } }
   @keyframes introScaleUp { to { transform: scale(1); } }
-  @keyframes introOverlayFade {
-    to { opacity: 0; visibility: hidden; pointer-events: none; }
-  }
 
   @media (max-width: 560px) {
+    .hero-headline,
     .intro-name {
       white-space: normal;
-      text-align: center;
       font-size: clamp(2.6rem, 12vw, 4.2rem);
-      padding: 0 1.5rem;
     }
   }
 
@@ -863,19 +865,49 @@
 </footer>
 
 <script>
-  /* ---------- INTRO OVERLAY: lock scroll during it, clean up after ---------- */
+  /* ---------- INTRO OVERLAY ---------- */
+  /* Phase 1 (CSS keyframes, in <style>): fade in + scale up, centered.
+     Phase 2 (below): once phase 1 finishes, measure exactly where the real
+     .hero-headline sits and glide the overlay name there — same font,
+     same size, so it lands pixel-perfect on top of the real one.
+     Phase 3 (below): overlay fades out, revealing the real page beneath. */
   (function () {
     const overlay = document.getElementById('intro-overlay');
-    if (!overlay) return;
+    const nameEl = document.querySelector('.intro-name');
+    const realHeadline = document.querySelector('.hero-headline');
+    if (!overlay || !nameEl || !realHeadline) return;
+
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduced) { overlay.remove(); return; }
 
     document.body.style.overflow = 'hidden';
-    // Matches the overlay's fade-out delay (1.55s) + duration (0.35s) in CSS.
-    setTimeout(function () {
-      document.body.style.overflow = '';
-      overlay.style.display = 'none';
-    }, 1900);
+
+    function finishIntro() {
+      overlay.classList.add('fade-out');
+      setTimeout(function () {
+        document.body.style.overflow = '';
+        overlay.style.display = 'none';
+      }, 260); // matches the .fade-out opacity transition duration
+    }
+
+    nameEl.addEventListener('animationend', function (e) {
+      if (e.animationName !== 'introScaleUp') return; // ignore the fade-in one
+
+      const from = nameEl.getBoundingClientRect();
+      const to = realHeadline.getBoundingClientRect();
+      const dx = to.left - from.left;
+      const dy = to.top - from.top;
+
+      const glide = nameEl.animate(
+        [
+          { transform: 'translate(0px, 0px)' },
+          { transform: 'translate(' + dx + 'px, ' + dy + 'px)' }
+        ],
+        { duration: 650, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', fill: 'forwards' }
+      );
+
+      glide.finished.then(finishIntro).catch(finishIntro);
+    });
   })();
 
   function updateClock() {
