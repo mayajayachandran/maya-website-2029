@@ -170,6 +170,12 @@
     pointer-events: none;   /* clicks register on the tile, not the raw <img> */
   }
 
+  /* Shifts the crop window fully left so #41 (in red, shooting) sits
+     roughly centered, keeps the ball in frame, and drops the basket. */
+  .marquee-tile img.crop-tourney {
+    object-position: 0% center;
+  }
+
   /* ---------- LIGHTBOX MODAL ---------- */
 
   .lightbox {
@@ -613,7 +619,7 @@
 
   <div class="marquee-outer">
     <div class="marquee-track">
-      <div class="marquee-tile"><img src="images/photo-basketball-tourney.jpg" alt="Basketball tournament"></div>
+      <div class="marquee-tile"><img class="crop-tourney" src="images/photo-basketball-tourney.jpg" alt="Basketball tournament"></div>
       <div class="marquee-tile"><img src="images/photo-casual-portrait.jpg" alt="Portrait"></div>
       <div class="marquee-tile"><img src="images/photo-rowing-gear.jpg" alt="Rowing practice"></div>
       <div class="marquee-tile"><img src="images/photo-podium-speech.jpg" alt="Speaking at a podium"></div>
@@ -621,7 +627,7 @@
       <div class="marquee-tile"><img src="images/photo-basketball-teammelo.jpg" alt="Basketball action shot"></div>
       <div class="marquee-tile"><img src="images/photo-rowing-water.jpg" alt="Rowing on the water"></div>
       <!-- duplicate set for seamless loop -->
-      <div class="marquee-tile"><img src="images/photo-basketball-tourney.jpg" alt=""></div>
+      <div class="marquee-tile"><img class="crop-tourney" src="images/photo-basketball-tourney.jpg" alt=""></div>
       <div class="marquee-tile"><img src="images/photo-casual-portrait.jpg" alt=""></div>
       <div class="marquee-tile"><img src="images/photo-rowing-gear.jpg" alt=""></div>
       <div class="marquee-tile"><img src="images/photo-podium-speech.jpg" alt=""></div>
