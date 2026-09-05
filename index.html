@@ -530,13 +530,29 @@
   }
 
   .footer-email {
-    display: inline-block;
-    font-family: var(--font-head);
-    font-weight: 600;
-    font-size: 1.05rem;
-    color: var(--pink-bright);
-    border-bottom: 2px solid var(--pink-bright);
-    padding-bottom: 3px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .footer-email img {
+    height: 42px;
+    width: auto;
+    transition: transform 0.2s ease;
+  }
+
+  .footer-email:hover img {
+    transform: translateY(-2px);
+  }
+
+  .socials-email img {
+    height: 22px;
+    width: auto;
+    vertical-align: middle;
+    transition: transform 0.2s ease;
+  }
+
+  .socials-email:hover img {
+    transform: translateY(-2px);
   }
 
   .contact-form {
@@ -546,6 +562,18 @@
     display: flex;
     flex-direction: column;
     gap: 1.1rem;
+  }
+
+  /* Positioned off-screen rather than display:none — some spam bots
+     specifically skip fields hidden that way, so this hides it from real
+     visitors while still looking "fillable" to less careful bots. */
+  .hp-field {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
   }
 
   .contact-form label {
@@ -824,10 +852,20 @@
         <div class="footer-kicker">Coaches, admissions readers, mentors —</div>
         <h2>Let's Connect</h2>
         <p>Send a message directly, or reach out over email or Instagram — whichever's easiest.</p>
-        <a class="footer-email" href="mailto:maya.jayachandran2011@gmail.com">maya.jayachandran2011@gmail.com</a>
+        <a class="footer-email" id="footer-email-link" href="#" aria-label="Email Maya">
+          <img src="images/icon-email.png" alt="Email icon">
+        </a>
+        <noscript><p style="color: var(--blue-soft); font-size: 0.85rem; margin-top: 0.5rem;">Email: maya dot jayachandran2011 at gmail dot com</p></noscript>
       </div>
 
       <form class="contact-form" id="contact-form">
+        <!-- Honeypot: hidden from real visitors via CSS, left open for bots
+             that auto-fill every field. tabindex/autocomplete prevent it
+             from ever being reached by keyboard nav or browser autofill. -->
+        <div class="hp-field" aria-hidden="true">
+          <label for="cf-website">Website</label>
+          <input type="text" id="cf-website" name="website" tabindex="-1" autocomplete="off">
+        </div>
         <div>
           <label for="cf-name">Full name</label>
           <input type="text" id="cf-name" name="name" placeholder="Your name" required>
@@ -857,7 +895,9 @@
       <div id="footer-location">Baltimore, MD</div>
       <div class="socials">
         <a href="https://instagram.com/maya.jayachandran.2029" target="_blank" rel="noopener">Instagram</a>
-        <a href="mailto:maya.jayachandran2011@gmail.com">Email</a>
+        <a href="#" id="socials-email-link" class="socials-email" aria-label="Email Maya">
+          <img src="images/icon-email.png" alt="Email icon">
+        </a>
       </div>
       <div>© 2026 Maya Jayachandran</div>
     </div>
@@ -921,10 +961,39 @@
   updateClock();
   setInterval(updateClock, 30000);
 
+  /* ---------- EMAIL OBFUSCATION ---------- */
+  /* The address is never written as plain text anywhere in the HTML/JS
+     source — it's assembled from parts at runtime. This stops simple
+     scrapers that scan page source for mailto: links, without requiring
+     JS-disabled visitors to lose functionality entirely (see noscript
+     fallback in the footer markup). */
+  function getEmail() {
+    const user = ['maya', 'jayachandran2011'].join('.');
+    const domain = ['gmail', 'com'].join('.');
+    return user + '@' + domain;
+  }
+
+  const footerEmailLink = document.getElementById('footer-email-link');
+  if (footerEmailLink) {
+    footerEmailLink.href = 'mailto:' + getEmail();
+  }
+
+  const socialsEmailLink = document.getElementById('socials-email-link');
+  if (socialsEmailLink) {
+    socialsEmailLink.href = 'mailto:' + getEmail();
+  }
+
   const form = document.getElementById('contact-form');
   if (form) {
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+
+      // Honeypot: a field real visitors never see or fill in. Bots that
+      // auto-fill every field on a page will typically fill this one —
+      // if it has anything in it, quietly drop the submission.
+      const honeypot = document.getElementById('cf-website');
+      if (honeypot && honeypot.value) return;
+
       const name = document.getElementById('cf-name').value;
       const email = document.getElementById('cf-email').value;
       const topic = document.getElementById('cf-topic').value;
@@ -933,7 +1002,7 @@
       const body = encodeURIComponent(
         'Name: ' + name + '\nEmail: ' + email + '\n\n' + message
       );
-      window.location.href = 'mailto:maya.jayachandran2011@gmail.com?subject=' + subject + '&body=' + body;
+      window.location.href = 'mailto:' + getEmail() + '?subject=' + subject + '&body=' + body;
     });
   }
 
