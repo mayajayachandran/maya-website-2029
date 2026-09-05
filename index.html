@@ -170,31 +170,11 @@
     pointer-events: none;   /* clicks register on the tile, not the raw <img> */
   }
 
-  /* Each of these three zooms/repositions a specific marquee photo only —
-     the lightbox and any other use of the same file elsewhere on the page
-     are untouched, since those use plain <img> tags without these classes.
-     Values were computed from actual pixel coordinates in each source photo,
-     then verified by re-deriving the crop from the CSS math and confirming
-     it matches the intended crop before shipping. */
-
-  .marquee-tile img.crop-tourney {
-    /* Centers #41 (red jersey, shooting) with the ball in frame, keeps the
-       banners, excludes the basket and all spectator heads at the bottom. */
-    transform: scale(1.335);
-    transform-origin: -139.6% 0%;
-  }
-
-  .marquee-tile img.crop-portrait {
-    /* Waist-up crop: crop ends right at the waistband. */
-    transform: scale(2.854);
-    transform-origin: 53.1% 61.6%;
-  }
-
-  .marquee-tile img.crop-podium {
-    /* Tighter crop around Maya + the podium, showing much less curtain. */
-    transform: scale(1.325);
-    transform-origin: 50% 132.6%;
-  }
+  /* Marquee thumbnails for these three photos use dedicated pre-cropped
+     image files (see images/*-marquee.jpg) instead of CSS cropping tricks —
+     this guarantees the thumbnail always fully fills the tile with no gaps.
+     The lightbox still opens the original, uncropped photo via the
+     data-full-src attribute set on each of these tiles' <img>. */
 
   /* ---------- LIGHTBOX MODAL ---------- */
 
@@ -639,18 +619,18 @@
 
   <div class="marquee-outer">
     <div class="marquee-track">
-      <div class="marquee-tile"><img class="crop-tourney" src="images/photo-basketball-tourney.jpg" alt="Basketball tournament"></div>
-      <div class="marquee-tile"><img class="crop-portrait" src="images/photo-casual-portrait.jpg" alt="Portrait"></div>
+      <div class="marquee-tile"><img src="images/photo-basketball-tourney-marquee.jpg" data-full-src="images/photo-basketball-tourney.jpg" alt="Basketball tournament"></div>
+      <div class="marquee-tile"><img src="images/photo-casual-portrait-marquee.jpg" alt="Portrait"></div>
       <div class="marquee-tile"><img src="images/photo-rowing-gear.jpg" alt="Rowing practice"></div>
-      <div class="marquee-tile"><img class="crop-podium" src="images/photo-podium-speech.jpg" alt="Speaking at a podium"></div>
+      <div class="marquee-tile"><img src="images/photo-podium-speech-marquee.jpg" alt="Speaking at a podium"></div>
       <div class="marquee-tile"><img src="images/photo-rally.jpg" alt="Community rally"></div>
       <div class="marquee-tile"><img src="images/photo-basketball-teammelo.jpg" alt="Basketball action shot"></div>
       <div class="marquee-tile"><img src="images/photo-rowing-water.jpg" alt="Rowing on the water"></div>
       <!-- duplicate set for seamless loop -->
-      <div class="marquee-tile"><img class="crop-tourney" src="images/photo-basketball-tourney.jpg" alt=""></div>
-      <div class="marquee-tile"><img class="crop-portrait" src="images/photo-casual-portrait.jpg" alt=""></div>
+      <div class="marquee-tile"><img src="images/photo-basketball-tourney-marquee.jpg" data-full-src="images/photo-basketball-tourney.jpg" alt=""></div>
+      <div class="marquee-tile"><img src="images/photo-casual-portrait-marquee.jpg" alt=""></div>
       <div class="marquee-tile"><img src="images/photo-rowing-gear.jpg" alt=""></div>
-      <div class="marquee-tile"><img class="crop-podium" src="images/photo-podium-speech.jpg" alt=""></div>
+      <div class="marquee-tile"><img src="images/photo-podium-speech-marquee.jpg" alt=""></div>
       <div class="marquee-tile"><img src="images/photo-rally.jpg" alt=""></div>
       <div class="marquee-tile"><img src="images/photo-basketball-teammelo.jpg" alt=""></div>
       <div class="marquee-tile"><img src="images/photo-rowing-water.jpg" alt=""></div>
@@ -914,7 +894,9 @@
       tile.addEventListener('click', function () {
         const img = tile.querySelector('img');
         if (!img) return;
-        lightboxImg.src = img.src;
+        // Some marquee thumbnails are pre-cropped for display; data-full-src
+        // (when present) points at the original, uncropped photo instead.
+        lightboxImg.src = img.dataset.fullSrc || img.src;
         lightboxImg.alt = img.alt;
         lightbox.classList.add('active');
       });
