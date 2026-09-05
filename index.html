@@ -85,7 +85,57 @@
   }
   .topnav .links a:hover::after { transform: scaleX(1); }
 
+  /* ---------- INTRO ANIMATION ---------- */
+  /* Timeline: 0–0.25s solid pink pause -> name fades in centered, small ->
+     scales up over ~0.95s -> brief hold -> overlay fades out revealing the
+     real page (already fully rendered underneath). ~1.9s total. */
+
+  .intro-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: var(--raspberry);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: introOverlayFade 0.35s ease-in 1.55s forwards;
+  }
+
+  .intro-name {
+    font-family: var(--font-display);
+    font-weight: 400;
+    color: var(--pink-pale);
+    font-size: clamp(2.4rem, 9.4vw, 13rem);
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    opacity: 0;
+    transform: scale(0.22);
+    animation:
+      introFadeIn 0.3s ease-out 0.25s forwards,
+      introScaleUp 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+  }
+
+  @keyframes introFadeIn { to { opacity: 1; } }
+  @keyframes introScaleUp { to { transform: scale(1); } }
+  @keyframes introOverlayFade {
+    to { opacity: 0; visibility: hidden; pointer-events: none; }
+  }
+
+  @media (max-width: 560px) {
+    .intro-name {
+      white-space: normal;
+      text-align: center;
+      font-size: clamp(2.6rem, 12vw, 4.2rem);
+      padding: 0 1.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .intro-overlay { display: none; }
+  }
+
   /* ---------- HERO ---------- */
+
 
   .hero {
     background: var(--raspberry);
@@ -603,6 +653,10 @@
 </head>
 <body>
 
+<div class="intro-overlay" id="intro-overlay">
+  <h1 class="intro-name">MAYA JAYACHANDRAN</h1>
+</div>
+
 <section class="hero">
   <div class="topnav">
     <div class="logotype">Maya J.</div>
@@ -652,7 +706,7 @@
     </div>
     <div class="about-text">
       <span class="kicker">Hi, I'm Maya!</span>
-      <h2>I am pushing myself on the court, in the boat, in the classroom, and in rooms where people are fighting for something bigger than themselves.</h2>
+      <h2>I push myself on the court, in the boat, in the classroom, and in rooms where people are fighting for something bigger than themselves.</h2>
       <p>
         I've spent this past summer volunteering both with Global Refuge and
         The Sanctuary, working to impact families navigating systems that
@@ -809,6 +863,21 @@
 </footer>
 
 <script>
+  /* ---------- INTRO OVERLAY: lock scroll during it, clean up after ---------- */
+  (function () {
+    const overlay = document.getElementById('intro-overlay');
+    if (!overlay) return;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) { overlay.remove(); return; }
+
+    document.body.style.overflow = 'hidden';
+    // Matches the overlay's fade-out delay (1.55s) + duration (0.35s) in CSS.
+    setTimeout(function () {
+      document.body.style.overflow = '';
+      overlay.style.display = 'none';
+    }, 1900);
+  })();
+
   function updateClock() {
     const el = document.getElementById('footer-location');
     if (!el) return;
@@ -885,7 +954,7 @@
 
     function tick() {
       if (autoScrollEnabled) {
-        marqueeOuter.scrollLeft += 0.6;
+        marqueeOuter.scrollLeft += 1.5;
       }
       loopScrollPosition();
       requestAnimationFrame(tick);
