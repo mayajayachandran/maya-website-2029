@@ -400,10 +400,17 @@
     box-shadow: 0 14px 26px rgba(43, 20, 32, 0.2);
   }
 
+  /* This file is pre-cropped to start just above her head; anchoring to
+     top means any further cover-cropping trims from the bottom only,
+     so her face never gets cut off at any container size. */
+  .panel-photo.crop-top {
+    object-position: center top;
+  }
+
   @media (max-width: 800px) {
     .service-panel { min-height: 74vh; }
     .panel-tags { max-width: 100%; }
-    .panel-photo { position: static; margin-top: 1.6rem; width: 100%; height: 180px; border-radius: 16px; object-position: top; }
+    .panel-photo { position: static; margin-top: 1.6rem; width: 100%; height: 180px; border-radius: 16px; }
   }
 
   /* ---------- FLOATING CONTACT PILL ---------- */
@@ -647,18 +654,17 @@
     </div>
     <div class="about-text">
       <span class="kicker">Hi, I'm Maya</span>
-      <h2>I care most about people who don't get to choose their circumstances.</h2>
+      <h2>I am pushing myself on the court, in the boat, the classroom, and in rooms where people are fighting for something bigger than themselves.</h2>
       <p>
-        I've spent the last two summers at Global Refuge and The Sanctuary in
-        Baltimore, working alongside families navigating systems that weren't
-        built with them in mind. That work sits right next to basketball and
-        rowing for me — not opposite it. Both are about showing up when it's
-        hard and doing the unglamorous parts well.
+        I've spent this past summer volunteering both with Global Refuge and
+        The Sanctuary, working to impact families navigating systems that
+        weren't initially built for them.
       </p>
       <p>
-        I'm fifteen. I don't have this all figured out yet, and I'm not
-        pretending to. This site is where I'm building the throughline in
-        public, one season and one piece of writing at a time.
+        This work is extremely important to me as a person and how I want to
+        help define the future. Both organizations are about showing up, even
+        when it's hard, and doing the unglamorous parts well alongside the
+        parts that get mentioned in the news.
       </p>
       <a class="about-cta" href="#">Read the full story</a>
     </div>
@@ -686,7 +692,7 @@
           Watch highlight reel
         </a>
       </div>
-      <img class="panel-photo" src="images/photo-basketball-teammelo.jpg" alt="Maya playing basketball">
+      <img class="panel-photo crop-top" src="images/photo-basketball-teammelo-panel.jpg" alt="Maya playing basketball">
     </div>
   </div>
 
