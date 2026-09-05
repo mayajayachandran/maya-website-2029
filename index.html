@@ -86,19 +86,20 @@
   .topnav .links a:hover::after { transform: scaleX(1); }
 
   /* ---------- INTRO ANIMATION ---------- */
-  /* Timeline: 0-0.25s solid pink pause -> name fades in centered, small ->
-     scales up over ~0.95s (CSS keyframes, below) -> JS measures the real
-     hero-headline's exact position and glides the name into it (~0.65s) ->
-     overlay fades out, revealing the real page underneath. ~2.6s total. */
+  /* intro-name shares hero-headline's exact font-size/padding/line-height —
+     so its natural position (transform: none) IS the real headline's
+     position, guaranteed, at every screen size. No JS measurement needed;
+     the whole thing is just animating a transform toward "none". */
+  /* Timeline: 0-0.25s solid pink pause -> name fades in, centered+small ->
+     scales up over ~0.95s, still centered -> glides to its natural
+     top-left position over ~0.65s -> overlay fades out. ~2.6s total. */
 
   .intro-overlay {
     position: fixed;
     inset: 0;
     z-index: 200;
     background: var(--raspberry);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    overflow: hidden;
     transition: opacity 0.25s ease-in;
   }
 
@@ -108,21 +109,34 @@
   }
 
   .intro-name {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     font-family: var(--font-display);
     font-weight: 400;
     color: var(--pink-pale);
     font-size: clamp(2.4rem, 9.4vw, 13rem);
+    line-height: 0.92;
     letter-spacing: -0.01em;
     white-space: nowrap;
+    padding: clamp(0.5rem, 2vw, 1rem) clamp(1.5rem, 5vw, 3.5rem) 0;
     opacity: 0;
-    transform: scale(0.22);
+    /* translate(-50%,-50%) centers based on THIS element's own rendered
+       size regardless of how wide the text turns out to be, then the
+       50vw/44vh moves that centered anchor to the viewport's middle. */
+    transform: translate(50vw, 44vh) translate(-50%, -50%) scale(0.22);
     animation:
       introFadeIn 0.3s ease-out 0.25s forwards,
-      introScaleUp 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+      introScaleUp 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards,
+      introGlideHome 0.65s cubic-bezier(0.65, 0, 0.35, 1) 1.45s forwards;
   }
 
   @keyframes introFadeIn { to { opacity: 1; } }
-  @keyframes introScaleUp { to { transform: scale(1); } }
+  @keyframes introScaleUp {
+    to { transform: translate(50vw, 44vh) translate(-50%, -50%) scale(1); }
+  }
+  @keyframes introGlideHome { to { transform: none; } }
 
   @media (max-width: 560px) {
     .hero-headline,
@@ -920,16 +934,14 @@
 
 <script>
   /* ---------- INTRO OVERLAY ---------- */
-  /* Phase 1 (CSS keyframes, in <style>): fade in + scale up, centered.
-     Phase 2 (below): once phase 1 finishes, measure exactly where the real
-     .hero-headline sits and glide the overlay name there — same font,
-     same size, so it lands pixel-perfect on top of the real one.
-     Phase 3 (below): overlay fades out, revealing the real page beneath. */
+  /* All the animation (fade, scale, glide-home) is pure CSS now — intro-name
+     shares hero-headline's exact layout rules, so "transform: none" already
+     IS the correct final position at every screen size. This JS just waits
+     for that CSS animation to finish, then fades the overlay away. */
   (function () {
     const overlay = document.getElementById('intro-overlay');
     const nameEl = document.querySelector('.intro-name');
-    const realHeadline = document.querySelector('.hero-headline');
-    if (!overlay || !nameEl || !realHeadline) return;
+    if (!overlay || !nameEl) return;
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduced) { overlay.remove(); return; }
@@ -945,22 +957,7 @@
     }
 
     nameEl.addEventListener('animationend', function (e) {
-      if (e.animationName !== 'introScaleUp') return; // ignore the fade-in one
-
-      const from = nameEl.getBoundingClientRect();
-      const to = realHeadline.getBoundingClientRect();
-      const dx = to.left - from.left;
-      const dy = to.top - from.top;
-
-      const glide = nameEl.animate(
-        [
-          { transform: 'translate(0px, 0px)' },
-          { transform: 'translate(' + dx + 'px, ' + dy + 'px)' }
-        ],
-        { duration: 650, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', fill: 'forwards' }
-      );
-
-      glide.finished.then(finishIntro).catch(finishIntro);
+      if (e.animationName === 'introGlideHome') finishIntro();
     });
   })();
 
