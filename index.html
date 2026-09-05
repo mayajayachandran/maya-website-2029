@@ -129,8 +129,15 @@
   /* ---------- HERO PHOTO MARQUEE ---------- */
 
   .marquee-outer {
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     width: 100%;
+    scrollbar-width: none;      /* Firefox: hide scrollbar */
+    -ms-overflow-style: none;   /* old Edge/IE: hide scrollbar */
+  }
+
+  .marquee-outer::-webkit-scrollbar {
+    display: none;              /* Chrome/Safari: hide scrollbar */
   }
 
   .marquee-track {
@@ -138,16 +145,6 @@
     gap: 1.1rem;
     width: max-content;
     padding: 0 1.1rem;
-    animation: scroll-left 34s linear infinite;
-  }
-
-  .marquee-outer:hover .marquee-track {
-    animation-play-state: paused;
-  }
-
-  @keyframes scroll-left {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
   }
 
   .marquee-tile {
@@ -158,16 +155,47 @@
     border: 6px solid var(--pink-pale);
     overflow: hidden;
     box-shadow: 0 10px 22px rgba(43, 20, 32, 0.25);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  .marquee-tile:hover {
+    transform: translateY(-4px);
   }
 
   .marquee-tile img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    pointer-events: none;   /* clicks register on the tile, not the raw <img> */
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .marquee-track { animation: none; }
+  /* ---------- LIGHTBOX MODAL ---------- */
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(43, 20, 32, 0.86);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1.5rem, 5vw, 4rem);
+    cursor: pointer;
+  }
+
+  .lightbox.active {
+    display: flex;
+  }
+
+  .lightbox img {
+    max-width: 90vw;
+    max-height: 88vh;
+    object-fit: contain;
+    border-radius: 16px;
+    border: 6px solid var(--pink-pale);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
+    cursor: default;
   }
 
   /* ---------- ABOUT / HI I'M MAYA ---------- */
@@ -604,6 +632,10 @@
   </div>
 </section>
 
+<div class="lightbox" id="lightbox">
+  <img id="lightbox-img" src="" alt="">
+</div>
+
 <section class="about" id="about">
   <div class="about-grid">
     <div class="about-photo-wrap">
@@ -790,6 +822,91 @@
         'Name: ' + name + '\nEmail: ' + email + '\n\n' + message
       );
       window.location.href = 'mailto:maya.jayachandran2011@gmail.com?subject=' + subject + '&body=' + body;
+    });
+  }
+
+  /* ---------- MARQUEE: auto-scroll + native trackpad scroll ---------- */
+
+  const marqueeOuter = document.querySelector('.marquee-outer');
+  const marqueeTrack = document.querySelector('.marquee-track');
+
+  if (marqueeOuter && marqueeTrack) {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let autoScrollEnabled = !prefersReducedMotion;
+    let resumeTimer = null;
+
+    // Pause auto-scroll whenever the person interacts (trackpad, touch, or mouse
+    // hover), and resume a little while after they stop.
+    function pauseAutoScroll() {
+      autoScrollEnabled = false;
+      clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(() => {
+        if (!prefersReducedMotion) autoScrollEnabled = true;
+      }, 1600);
+    }
+
+    marqueeOuter.addEventListener('wheel', pauseAutoScroll, { passive: true });
+    marqueeOuter.addEventListener('touchstart', pauseAutoScroll, { passive: true });
+    marqueeOuter.addEventListener('mouseenter', () => { autoScrollEnabled = false; });
+    marqueeOuter.addEventListener('mouseleave', () => {
+      if (!prefersReducedMotion) autoScrollEnabled = true;
+    });
+
+    // The tile list is duplicated once in the HTML (real set + identical copy)
+    // so that when we snap scrollLeft back by exactly half the track width,
+    // the jump is invisible and the loop feels infinite either direction.
+    function loopScrollPosition() {
+      const half = marqueeTrack.scrollWidth / 2;
+      if (marqueeOuter.scrollLeft >= half) {
+        marqueeOuter.scrollLeft -= half;
+      } else if (marqueeOuter.scrollLeft <= 0) {
+        marqueeOuter.scrollLeft += half;
+      }
+    }
+
+    function tick() {
+      if (autoScrollEnabled) {
+        marqueeOuter.scrollLeft += 0.6;
+      }
+      loopScrollPosition();
+      requestAnimationFrame(tick);
+    }
+
+    // Start roughly a third of the way into the loop so it doesn't visibly
+    // start from a dead stop at the very first photo every page load.
+    marqueeOuter.scrollLeft = marqueeTrack.scrollWidth / 6;
+    requestAnimationFrame(tick);
+  }
+
+  /* ---------- LIGHTBOX: click a photo to feature it, click outside to close ---------- */
+
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+
+  if (lightbox && lightboxImg) {
+    document.querySelectorAll('.marquee-tile').forEach(function (tile) {
+      tile.addEventListener('click', function () {
+        const img = tile.querySelector('img');
+        if (!img) return;
+        lightboxImg.src = img.src;
+        lightboxImg.alt = img.alt;
+        lightbox.classList.add('active');
+      });
+    });
+
+    // Clicking anywhere on the dark backdrop closes it. Since the click
+    // listener is on the backdrop itself, a click that lands on the image
+    // (a child element) won't match "e.target === lightbox" and won't close.
+    lightbox.addEventListener('click', function (e) {
+      if (e.target === lightbox) {
+        lightbox.classList.remove('active');
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        lightbox.classList.remove('active');
+      }
     });
   }
 </script>
