@@ -327,6 +327,7 @@
 
   .service-stack {
     position: relative;
+    background: var(--raspberry);
   }
 
   .service-panel {
@@ -338,6 +339,8 @@
     justify-content: center;
     border-radius: 32px 32px 0 0;
     box-shadow: 0 -10px 30px rgba(43, 20, 32, 0.12);
+    transform-origin: center top;
+    will-change: transform;
   }
 
   .service-panel:nth-child(1) { top: 0px; z-index: 1; background: var(--pink-bright); }
@@ -1040,6 +1043,65 @@
       window.location.href = 'mailto:' + getEmail() + '?subject=' + subject + '&body=' + body;
     });
   }
+
+  /* ---------- SERVICE CARDS: shrink + recede as the next card covers them ---------- */
+  /* As each card slides up and starts covering the one behind it, the
+     covered card scales down slightly and eases back — same "depth" effect
+     as jazzicreates.tv's services section. Computed from real element
+     positions each frame (via getBoundingClientRect), not guessed values,
+     so it stays correct regardless of viewport size or content changes. */
+  (function () {
+    const stackPanels = Array.from(document.querySelectorAll('.service-panel'));
+    const footer = document.getElementById('connect');
+    if (stackPanels.length < 2 || !footer) return;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) return; // leave cards at their natural, unscaled state
+
+    const STAGGER = 64;     // must match the nth-child `top` values in CSS
+    const MAX_SHRINK = 0.94; // outgoing card eases down to 94% scale
+    const MAX_RECEDE = 10;   // and drifts down by up to 10px
+    let ticking = false;
+
+    function progressFor(nextTop, restingTop, vh) {
+      const raw = (vh - nextTop) / (vh - restingTop);
+      return Math.min(Math.max(raw, 0), 1);
+    }
+
+    function applyShrink(panel, progress) {
+      const scale = 1 - progress * (1 - MAX_SHRINK);
+      const recede = progress * MAX_RECEDE;
+      panel.style.transform = 'scale(' + scale + ') translateY(' + recede + 'px)';
+    }
+
+    function updateStack() {
+      const vh = window.innerHeight;
+      for (let i = 0; i < stackPanels.length - 1; i++) {
+        const nextTop = stackPanels[i + 1].getBoundingClientRect().top;
+        const restingTop = (i + 1) * STAGGER;
+        applyShrink(stackPanels[i], progressFor(nextTop, restingTop, vh));
+      }
+      // The last card has no next card to be covered by — instead, it
+      // disengages the same way as the footer scrolls up into view,
+      // so the whole stack "lets go" at the end instead of just stopping.
+      const last = stackPanels[stackPanels.length - 1];
+      const footerTop = footer.getBoundingClientRect().top;
+      applyShrink(last, progressFor(footerTop, 0, vh));
+    }
+
+    function onScrollOrResize() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        updateStack();
+        ticking = false;
+      });
+    }
+
+    window.addEventListener('scroll', onScrollOrResize, { passive: true });
+    window.addEventListener('resize', onScrollOrResize);
+    updateStack();
+  })();
 
   /* ---------- MARQUEE: auto-scroll + native trackpad scroll ---------- */
 
