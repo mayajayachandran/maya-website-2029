@@ -328,6 +328,7 @@
   .service-stack {
     position: relative;
     background: var(--raspberry);
+    padding-bottom: clamp(3rem, 20vh, 12rem);
   }
 
   .service-panel {
@@ -348,6 +349,11 @@
   .service-panel:nth-child(3) { top: 128px; z-index: 3; background: var(--sage-green); }
   .service-panel:nth-child(4) { top: 192px; z-index: 4; background: var(--yellow-pale); }
 
+  /* Only the last card's bottom edge is ever actually visible (the others
+     are always covered by the next card), so it's the only one that needs
+     rounding to match the top corners all the way around. */
+  .service-panel:last-child { border-radius: 32px; }
+
   .panel-inner {
     max-width: 1280px;
     margin: 0 auto;
@@ -363,6 +369,8 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: 1rem;
+    transform-origin: left top;
+    will-change: transform;
   }
 
   .panel-title {
@@ -466,6 +474,7 @@
 
   @media (max-width: 800px) {
     .service-panel { min-height: auto; border-radius: 24px 24px 0 0; }
+    .service-panel:last-child { border-radius: 24px; }
     .panel-inner { grid-template-columns: 1fr; }
     .panel-photo { height: 220px; border-radius: 16px; }
   }
@@ -776,7 +785,7 @@
     <div class="panel-inner">
       <div class="panel-text">
         <div class="panel-head">
-          <h2 class="panel-title">Athlete</h2>
+          <h2 class="panel-title">Athletics</h2>
           <span class="panel-num">(01)</span>
         </div>
         <p class="panel-desc">Competitive basketball player on the EYCL Circuit with Team Melo, with a growing interest in rowing through school and Baltimore Community Rowing.</p>
@@ -852,7 +861,7 @@
     <div class="panel-inner">
       <div class="panel-text">
         <div class="panel-head">
-          <h2 class="panel-title">Student</h2>
+          <h2 class="panel-title">Academics</h2>
           <span class="panel-num">(04)</span>
         </div>
         <p class="panel-desc">Grade 10 at Roland Park Country School, with a growing interest in International Affairs and Politics.</p>
@@ -1049,7 +1058,10 @@
      covered card scales down slightly and eases back — same "depth" effect
      as jazzicreates.tv's services section. Computed from real element
      positions each frame (via getBoundingClientRect), not guessed values,
-     so it stays correct regardless of viewport size or content changes. */
+     so it stays correct regardless of viewport size or content changes.
+     The covered card's title also shrinks to a single compact line and
+     migrates up into the peeking sliver still visible above the next
+     card, instead of just vanishing mid-card. */
   (function () {
     const stackPanels = Array.from(document.querySelectorAll('.service-panel'));
     const footer = document.getElementById('connect');
@@ -1058,20 +1070,55 @@
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reducedMotion) return; // leave cards at their natural, unscaled state
 
-    const STAGGER = 64;     // must match the nth-child `top` values in CSS
-    const MAX_SHRINK = 0.94; // outgoing card eases down to 94% scale
-    const MAX_RECEDE = 10;   // and drifts down by up to 10px
+    const STAGGER = 64;      // must match the nth-child `top` values in CSS
+    const MAX_SHRINK = 0.94;  // outgoing card eases down to 94% scale
+    const MAX_RECEDE = 10;    // and drifts down by up to 10px
+    const TITLE_SCALE = 0.4;  // title shrinks to 40% size in the sliver
+    const TITLE_TARGET_TOP = 26; // px from the card's own top edge
     let ticking = false;
+
+    // Measured as a getBoundingClientRect difference (viewport-relative,
+    // not offsetTop) so this doesn't depend on `position: sticky` being
+    // treated as an offsetParent — that's spec-correct in modern browsers,
+    // but this way there's no ambiguity either way. Transforms are reset
+    // to 'none' before measuring (and restored after) so a rect never
+    // reflects an already-applied scroll-driven transform from a previous
+    // frame — otherwise the measurement would drift from reality. Re-run
+    // on resize, since the mobile layout stacks text/photo differently.
+    let heads = [];
+
+    function measureHeads() {
+      heads = stackPanels.map(function (panel) {
+        const head = panel.querySelector('.panel-head');
+        if (!head) return null;
+        const prevPanelT = panel.style.transform;
+        const prevHeadT = head.style.transform;
+        panel.style.transform = 'none';
+        head.style.transform = 'none';
+        const panelRect = panel.getBoundingClientRect();
+        const headRect = head.getBoundingClientRect();
+        panel.style.transform = prevPanelT;
+        head.style.transform = prevHeadT;
+        return { head: head, naturalTop: headRect.top - panelRect.top };
+      });
+    }
 
     function progressFor(nextTop, restingTop, vh) {
       const raw = (vh - nextTop) / (vh - restingTop);
       return Math.min(Math.max(raw, 0), 1);
     }
 
-    function applyShrink(panel, progress) {
+    function applyShrink(panel, progress, headInfo) {
       const scale = 1 - progress * (1 - MAX_SHRINK);
       const recede = progress * MAX_RECEDE;
       panel.style.transform = 'scale(' + scale + ') translateY(' + recede + 'px)';
+
+      if (headInfo) {
+        const headScale = 1 - progress * (1 - TITLE_SCALE);
+        const headTranslate = (TITLE_TARGET_TOP - headInfo.naturalTop) * progress;
+        headInfo.head.style.transform =
+          'translateY(' + headTranslate + 'px) scale(' + headScale + ')';
+      }
     }
 
     function updateStack() {
@@ -1079,17 +1126,18 @@
       for (let i = 0; i < stackPanels.length - 1; i++) {
         const nextTop = stackPanels[i + 1].getBoundingClientRect().top;
         const restingTop = (i + 1) * STAGGER;
-        applyShrink(stackPanels[i], progressFor(nextTop, restingTop, vh));
+        applyShrink(stackPanels[i], progressFor(nextTop, restingTop, vh), heads[i]);
       }
       // The last card has no next card to be covered by — instead, it
-      // disengages the same way as the footer scrolls up into view,
-      // so the whole stack "lets go" at the end instead of just stopping.
+      // disengages the same way as the footer scrolls up into view, so the
+      // whole stack "lets go" at the end instead of just stopping. Its
+      // title doesn't migrate anywhere (there's no sliver to land in).
       const last = stackPanels[stackPanels.length - 1];
       const footerTop = footer.getBoundingClientRect().top;
-      applyShrink(last, progressFor(footerTop, 0, vh));
+      applyShrink(last, progressFor(footerTop, 0, vh), null);
     }
 
-    function onScrollOrResize() {
+    function onScroll() {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(function () {
@@ -1098,8 +1146,14 @@
       });
     }
 
-    window.addEventListener('scroll', onScrollOrResize, { passive: true });
-    window.addEventListener('resize', onScrollOrResize);
+    function onResize() {
+      measureHeads();
+      onScroll();
+    }
+
+    measureHeads();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize);
     updateStack();
   })();
 
