@@ -288,6 +288,7 @@
   .video-modal video {
     display: block;
     width: 100%;
+    aspect-ratio: 16 / 9;   /* keeps the full 16:9 frame even before the video loads */
     max-height: 82vh;
     object-fit: contain;
     background: #000;
@@ -831,8 +832,9 @@
 <div class="video-modal" id="video-modal" role="dialog" aria-modal="true" aria-label="Maya Jayachandran 2029 highlight reel">
   <div class="video-modal-inner">
     <button type="button" class="video-modal-close" id="video-modal-close" aria-label="Close video">&times;</button>
-    <video id="highlight-video" controls playsinline preload="none">
-      <source src="https://pqleeikudibwcn97.private.blob.vercel-storage.com/maya-jayachandran-2029-highlight-reel.mp4" type="video/mp4">
+    <video id="highlight-video" controls playsinline preload="none"
+           poster="images/maya-jayachandran-2029-highlight-poster.jpg">
+      <source src="https://ixchan49o4h2zsz6.public.blob.vercel-storage.com/maya-jayachandran-2029-highlight-reel.mp4" type="video/mp4">
       Your browser doesn't support embedded video.
     </video>
   </div>
