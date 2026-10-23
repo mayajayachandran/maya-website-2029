@@ -258,6 +258,66 @@
     cursor: default;
   }
 
+  /* ---------- HIGHLIGHT REEL VIDEO MODAL ---------- */
+  /* Same look as the photo lightbox (dark backdrop, pale-pink frame).
+     The video uses preload="none" so the large file is only downloaded
+     when someone actually opens the modal, not on every page load. */
+
+  .video-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    background: rgba(43, 20, 32, 0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1rem, 4vw, 3rem);
+    cursor: pointer;
+  }
+
+  .video-modal.active {
+    display: flex;
+  }
+
+  .video-modal-inner {
+    position: relative;
+    width: min(1000px, 92vw);
+    cursor: default;
+  }
+
+  .video-modal video {
+    display: block;
+    width: 100%;
+    max-height: 82vh;
+    object-fit: contain;
+    background: #000;
+    border-radius: 16px;
+    border: 6px solid var(--pink-pale);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
+  }
+
+  .video-modal-close {
+    position: absolute;
+    top: -2.9rem;
+    right: 0;
+    width: 2.4rem;
+    height: 2.4rem;
+    border: none;
+    border-radius: 50%;
+    background: var(--pink-pale);
+    color: var(--raspberry);
+    font-family: var(--font-head);
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  .video-modal-close:hover {
+    transform: scale(1.08);
+  }
+
   /* ---------- ABOUT / HI I'M MAYA ---------- */
 
   .about {
@@ -443,6 +503,13 @@
     transition: transform 0.2s ease, background 0.2s ease;
   }
 
+  /* Lets a <button> use the same pill styling as the <a> buttons */
+  button.panel-btn {
+    border: none;
+    cursor: pointer;
+    line-height: inherit;
+  }
+
   .panel-btn:hover {
     transform: translateY(-2px);
   }
@@ -513,6 +580,7 @@
   @media (max-width: 560px) {
     .contact-pill { bottom: 1rem; right: 1rem; }
     .lightbox img { max-width: 72vw; max-height: 70.4vh; }
+    .video-modal video { border-width: 4px; border-radius: 12px; }
   }
 
   .contact-grid {
@@ -757,6 +825,19 @@
   <img id="lightbox-img" src="" alt="">
 </div>
 
+<!-- Highlight reel modal. The video file lives in Vercel Blob storage
+     (not in the repo) because it's too large for GitHub. To swap in a
+     new reel later, just replace the src URL below. -->
+<div class="video-modal" id="video-modal" role="dialog" aria-modal="true" aria-label="Maya Jayachandran 2029 highlight reel">
+  <div class="video-modal-inner">
+    <button type="button" class="video-modal-close" id="video-modal-close" aria-label="Close video">&times;</button>
+    <video id="highlight-video" controls playsinline preload="none">
+      <source src="https://pqleeikudibwcn97.private.blob.vercel-storage.com/maya-jayachandran-2029-highlight-reel.mp4" type="video/mp4">
+      Your browser doesn't support embedded video.
+    </video>
+  </div>
+</div>
+
 <section class="about" id="about">
   <div class="about-grid">
     <div class="about-photo-wrap">
@@ -798,10 +879,10 @@
         </div>
         <div class="panel-actions">
           <a class="panel-btn" href="#athletics">See more</a>
-          <a class="panel-btn secondary" href="https://instagram.com/maya.jayachandran.2029" target="_blank" rel="noopener">
+          <button type="button" class="panel-btn secondary" id="highlight-reel-btn">
             <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M6 4L20 12L6 20V4Z"/></svg>
             Watch highlight reel
-          </a>
+          </button>
           <a class="panel-btn secondary" href="#athletics" id="open-gyms-btn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
             Fall Open Gyms
@@ -1266,6 +1347,51 @@
       }
     });
   }
+
+  /* ---------- HIGHLIGHT REEL: open video in a modal ---------- */
+  /* Opens on "Watch highlight reel", starts playing, and closes via the ×
+     button, a click on the dark backdrop, or the Escape key. Closing
+     always pauses the video so it never keeps playing in the background.
+     Page scrolling is locked while the modal is open. */
+  (function () {
+    const reelBtn = document.getElementById('highlight-reel-btn');
+    const videoModal = document.getElementById('video-modal');
+    const video = document.getElementById('highlight-video');
+    const closeBtn = document.getElementById('video-modal-close');
+    if (!reelBtn || !videoModal || !video || !closeBtn) return;
+
+    let lastFocused = null;
+
+    function openReel() {
+      lastFocused = document.activeElement;
+      videoModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      closeBtn.focus();
+      // play() returns a promise; some browsers block autoplay with sound,
+      // in which case the visitor just presses play on the controls.
+      const p = video.play();
+      if (p && typeof p.catch === 'function') p.catch(function () {});
+    }
+
+    function closeReel() {
+      if (!videoModal.classList.contains('active')) return;
+      video.pause();
+      videoModal.classList.remove('active');
+      document.body.style.overflow = '';
+      if (lastFocused) lastFocused.focus();
+    }
+
+    reelBtn.addEventListener('click', openReel);
+    closeBtn.addEventListener('click', closeReel);
+
+    videoModal.addEventListener('click', function (e) {
+      if (e.target === videoModal) closeReel();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeReel();
+    });
+  })();
 </script>
 
 </body>
