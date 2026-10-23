@@ -319,6 +319,18 @@
     transform: scale(1.08);
   }
 
+  .video-modal-fallback {
+    margin-top: 0.8rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--pink-pale);
+  }
+
+  .video-modal-fallback a {
+    text-decoration: underline;
+    font-weight: 600;
+  }
+
   /* ---------- ABOUT / HI I'M MAYA ---------- */
 
   .about {
@@ -834,9 +846,13 @@
     <button type="button" class="video-modal-close" id="video-modal-close" aria-label="Close video">&times;</button>
     <video id="highlight-video" controls playsinline preload="none"
            poster="images/maya-jayachandran-2029-highlight-poster.jpg">
-      <source src="https://ixchan49o4h2zsz6.public.blob.vercel-storage.com/maya-jayachandran-2029-highlight-reel.mp4" type="video/mp4">
       Your browser doesn't support embedded video.
     </video>
+    <!-- Safety net: if a phone still won't play it inline, this opens the
+         video in the phone's own built-in player. -->
+    <p class="video-modal-fallback">
+      Trouble playing? <a id="highlight-video-link" href="#" target="_blank" rel="noopener">Open the video directly</a>
+    </p>
   </div>
 </div>
 
@@ -1354,13 +1370,46 @@
   /* Opens on "Watch highlight reel", starts playing, and closes via the ×
      button, a click on the dark backdrop, or the Escape key. Closing
      always pauses the video so it never keeps playing in the background.
-     Page scrolling is locked while the modal is open. */
+     Page scrolling is locked while the modal is open.
+
+     Two versions of the video live in Vercel Blob:
+       - HD (1080p, 60fps, ~51 MB) for laptops/desktops
+       - MOBILE (720p, 30fps, ~17 MB) for phones, tablets and slow
+         connections — some phones can't decode 1080p60, and the smaller
+         file starts much faster on cellular data.
+     The right one is picked when the modal first opens. If the HD file
+     fails to play for any reason, it automatically falls back to MOBILE. */
   (function () {
+    const HD_SRC = 'https://ixchan49o4h2zsz6.public.blob.vercel-storage.com/maya-jayachandran-2029-highlight-reel.mp4';
+    const MOBILE_SRC = 'https://ixchan49o4h2zsz6.public.blob.vercel-storage.com/maya-jayachandran-2029-highlight-reel-mobile.mp4';
+
     const reelBtn = document.getElementById('highlight-reel-btn');
     const videoModal = document.getElementById('video-modal');
     const video = document.getElementById('highlight-video');
     const closeBtn = document.getElementById('video-modal-close');
+    const directLink = document.getElementById('highlight-video-link');
     if (!reelBtn || !videoModal || !video || !closeBtn) return;
+
+    function prefersMobileFile() {
+      const smallOrTouch = window.matchMedia('(max-width: 900px), (pointer: coarse)').matches;
+      const conn = navigator.connection;
+      const slow = conn && (conn.saveData || /(^|-)(2g|3g)$/.test(conn.effectiveType || ''));
+      return smallOrTouch || !!slow;
+    }
+
+    const startSrc = prefersMobileFile() ? MOBILE_SRC : HD_SRC;
+    if (directLink) directLink.href = MOBILE_SRC;
+
+    // If the HD file errors out (unsupported decoder, network hiccup),
+    // quietly switch to the lighter mobile file and try again.
+    video.addEventListener('error', function () {
+      if (video.currentSrc && video.currentSrc.indexOf('-mobile.mp4') === -1) {
+        video.src = MOBILE_SRC;
+        video.load();
+        const retry = video.play();
+        if (retry && typeof retry.catch === 'function') retry.catch(function () {});
+      }
+    });
 
     let lastFocused = null;
 
@@ -1369,6 +1418,11 @@
       videoModal.classList.add('active');
       document.body.style.overflow = 'hidden';
       closeBtn.focus();
+      // Set the source on first open (inside the tap, which iPhones require
+      // for playback) so nothing downloads until someone asks to watch.
+      if (!video.getAttribute('src')) {
+        video.src = startSrc;
+      }
       // play() returns a promise; some browsers block autoplay with sound,
       // in which case the visitor just presses play on the controls.
       const p = video.play();
